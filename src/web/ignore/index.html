@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydro - The Unified Development Environment Catalyst</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'hydro-blue': '#3B82F6',
+                        'hydro-purple': '#8B5CF6',
+                        'hydro-cyan': '#06B6D4',
+                        'hydro-green': '#10B981',
+                        'hydro-orange': '#F59E0B',
+                        'hydro-red': '#EF4444',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-in-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'slide-in-left': 'slideInLeft 0.8s ease-out',
+                        'slide-in-right': 'slideInRight 0.8s ease-out',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideInLeft: {
+                            '0%': { transform: 'translateX(-30px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(30px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .hydro-gradient {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #06B6D4 100%);
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6, #06B6D4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+
+        .parallax {
+            transform: translateZ(0);
+            will-change: transform;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans smooth-scroll">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-effect">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 hydro-gradient rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">H</span>
+                    </div>
+                    <span class="text-xl font-bold text-gray-800">Hydro</span>
+                </div>
+
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home"
+                        class="nav-link text-gray-600 hover:text-hydro-blue transition-colors flex items-center space-x-1">
+                        <ion-icon name="home-outline" class="w-4 h-4"></ion-icon>
+                        <span>Home</span>
+                    </a>
+                    <a href="#features"
+                        class="nav-link text-gray-600 hover:text-hydro-blue transition-colors flex items-center space-x-1">
+                        <ion-icon name="star-outline" class="w-4 h-4"></ion-icon>
+                        <span>Features</span>
+                    </a>
+                    <a href="#demo"
+                        class="nav-link text-gray-600 hover:text-hydro-blue transition-colors flex items-center space-x-1">
+                        <ion-icon name="play-circle-outline" class="w-4 h-4"></ion-icon>
+                        <span>Demo</span>
+                    </a>
+                    <a href="#plugins"
+                        class="nav-link text-gray-600 hover:text-hydro-blue transition-colors flex items-center space-x-1">
+                        <ion-icon name="extension-puzzle-outline" class="w-4 h-4"></ion-icon>
+                        <span>Plugins</span>
+                    </a>
+                    <a href="#docs"
+                        class="nav-link text-gray-600 hover:text-hydro-blue transition-colors flex items-center space-x-1">
+                        <ion-icon name="document-text-outline" class="w-4 h-4"></ion-icon>
+                        <span>Documentation</span>
+                    </a>
+                    <a href="#commands"
+                        class="nav-link text-gray-600 hover:text-hydro-blue transition-colors flex items-center space-x-1">
+                        <ion-icon name="terminal-outline" class="w-4 h-4"></ion-icon>
+                        <span>Commands</span>
+                    </a>
+                    <a href="#examples"
+                        class="nav-link text-gray-600 hover:text-hydro-blue transition-colors flex items-center space-x-1">
+                        <ion-icon name="code-slash-outline" class="w-4 h-4"></ion-icon>
+                        <span>Examples</span>
+                    </a>
+                    <a href="#api"
+                        class="nav-link text-gray-600 hover:text-hydro-blue transition-colors flex items-center space-x-1">
+                        <ion-icon name="server-outline" class="w-4 h-4"></ion-icon>
+                        <span>API</span>
+                    </a>
+                </div>
+
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-hydro-blue">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-2 space-y-2">
+                <a href="#home" class="block py-2 text-gray-600 hover:text-hydro-blue flex items-center space-x-2">
+                    <ion-icon name="home-outline" class="w-4 h-4"></ion-icon>
+                    <span>Home</span>
+                </a>
+                <a href="#features" class="block py-2 text-gray-600 hover:text-hydro-blue flex items-center space-x-2">
+                    <ion-icon name="star-outline" class="w-4 h-4"></ion-icon>
+                    <span>Features</span>
+                </a>
+                <a href="#docs" class="block py-2 text-gray-600 hover:text-hydro-blue flex items-center space-x-2">
+                    <ion-icon name="document-text-outline" class="w-4 h-4"></ion-icon>
+                    <span>Documentation</span>
+                </a>
+                <a href="#commands" class="block py-2 text-gray-600 hover:text-hydro-blue flex items-center space-x-2">
+                    <ion-icon name="terminal-outline" class="w-4 h-4"></ion-icon>
+                    <span>Commands</span>
+                </a>
+                <a href="#examples" class="block py-2 text-gray-600 hover:text-hydro-blue flex items-center space-x-2">
+                    <ion-icon name="code-slash-outline" class="w-4 h-4"></ion-icon>
+                    <span>Examples</span>
+                </a>
+                <a href="#api" class="block py-2 text-gray-600 hover:text-hydro-blue flex items-center space-x-2">
+                    <ion-icon name="server-outline" class="w-4 h-4"></ion-icon>
+                    <span>API</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen gradient-bg flex items-center justify-center relative overflow-hidden">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-10 rounded-full animate-float"></div>
+            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-white opacity-5 rounded-full animate-float"
+                style="animation-delay: 1s;"></div>
+            <div class="absolute top-1/2 left-1/4 w-64 h-64 bg-white opacity-5 rounded-full animate-pulse-slow"></div>
+        </div>
+
+        <div class="relative z-10 text-center px-4 max-w-6xl mx-auto">
+            <div class="animate-fade-in">
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 animate-slide-up">
+                    <span class="block">Hydro</span>
+                    <span class="text-3xl md:text-4xl font-light opacity-90">Development Environment Catalyst</span>
+                </h1>
+
+                <p class="text-xl md:text-2xl text-white opacity-90 mb-8 max-w-3xl mx-auto animate-slide-up"
+                    style="animation-delay: 0.2s;">
+                    The unified development environment that automates code quality, dependency management, and project
+                    analysis with intelligent insights.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up"
+                    style="animation-delay: 0.4s;">
+                    <button
+                        class="bg-white text-hydro-blue px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105">
+                        Get Started
+                    </button>
+                    <button
+                        class="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-hydro-blue transition-all duration-300">
+                        View Documentation
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce-slow">
+            <svg class="w-6 h-6 text-white opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3">
+                </path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6 animate-slide-up">
+                    Powerful Features
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.2s;">
+                    Hydro provides comprehensive tools for modern development workflows
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature Cards -->
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-slide-in-left">
+                    <div class="w-16 h-16 hydro-gradient rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Code Analysis</h3>
+                    <p class="text-gray-600 mb-6">Comprehensive code quality analysis with complexity metrics,
+                        dependency tracking, and security scanning.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li>• Cyclomatic complexity analysis</li>
+                        <li>• Circular dependency detection</li>
+                        <li>• Security vulnerability scanning</li>
+                        <li>• Code smell detection</li>
+                    </ul>
+                </div>
+
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-slide-up"
+                    style="animation-delay: 0.2s;">
+                    <div class="w-16 h-16 hydro-gradient rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Dependency Management</h3>
+                    <p class="text-gray-600 mb-6">Intelligent dependency analysis with upgrade recommendations and
+                        security auditing.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li>• Outdated package detection</li>
+                        <li>• Security vulnerability alerts</li>
+                        <li>• License compliance checking</li>
+                        <li>• Automated upgrade suggestions</li>
+                    </ul>
+                </div>
+
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-slide-in-right"
+                    style="animation-delay: 0.4s;">
+                    <div class="w-16 h-16 hydro-gradient rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Project Visualization</h3>
+                    <p class="text-gray-600 mb-6">Interactive project maps and dependency graphs for better code
+                        understanding.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li>• Dependency graph visualization</li>
+                        <li>• Code complexity heatmaps</li>
+                        <li>• Architecture diagrams</li>
+                        <li>• Interactive project explorer</li>
+                    </ul>
+                </div>
+
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-slide-in-left"
+                    style="animation-delay: 0.6s;">
+                    <div class="w-16 h-16 hydro-gradient rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Automated Workflows</h3>
+                    <p class="text-gray-600 mb-6">Streamline your development process with automated code formatting,
+                        testing, and deployment.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li>• Pre-commit hooks</li>
+                        <li>• Automated code formatting</li>
+                        <li>• CI/CD integration</li>
+                        <li>• Smart refactoring suggestions</li>
+                    </ul>
+                </div>
+
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-slide-up"
+                    style="animation-delay: 0.8s;">
+                    <div class="w-16 h-16 hydro-gradient rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Documentation Generation</h3>
+                    <p class="text-gray-600 mb-6">Automatically generate comprehensive documentation from your codebase
+                        analysis.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li>• README generation</li>
+                        <li>• API documentation</li>
+                        <li>• Code comments analysis</li>
+                        <li>• Project structure mapping</li>
+                    </ul>
+                </div>
+
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-slide-in-right"
+                    style="animation-delay: 1s;">
+                    <div class="w-16 h-16 hydro-gradient rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Security & Safety</h3>
+                    <p class="text-gray-600 mb-6">Built-in safety mechanisms and security scanning to protect your
+                        codebase.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li>• Dry-run mode for safe operations</li>
+                        <li>• Rollback capabilities</li>
+                        <li>• Security vulnerability scanning</li>
+                        <li>• Backup and recovery</li>
+                    </ul>
+                </div>
+
+                <!-- AI Assistant Feature -->
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-slide-in-left"
+                    style="animation-delay: 1.2s;">
+                    <div class="w-16 h-16 hydro-gradient rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">AI Assistant</h3>
+                    <p class="text-gray-600 mb-6">Natural language queries and intelligent suggestions powered by AI for code understanding and improvement.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li>• Natural language queries</li>
+                        <li>• Intelligent suggestions</li>
+                        <li>• Code explanations</li>
+                        <li>• Refactoring advice</li>
+                    </ul>
+                </div>
+
+                <!-- Plugin System Feature -->
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg border border-gray-100 animate-slide-up"
+                    style="animation-delay: 1.4s;">
+                    <div class="w-16 h-16 hydro-gradient rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Plugin System</h3>
+                    <p class="text-gray-600 mb-6">Extensible architecture with custom analyzers, commands, and visualizers to enhance Hydro's capabilities.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li>• Custom analyzers</li>
+                        <li>• Additional commands</li>
+                        <li>• Visualization tools</li>
+                        <li>• Code generators</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plugin Marketplace Section -->
+    <section id="plugins" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                    <ion-icon name="storefront-outline" class="inline-block mr-3 text-hydro-green"></ion-icon>
+                    Plugin Marketplace
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Extend Hydro's capabilities with powerful plugins created by the community
+                </p>
+            </div>
+
+            <!-- Featured Plugins -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                <!-- Performance Analyzer Plugin -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-hydro-blue/10 rounded-lg flex items-center justify-center mr-4">
+                            <ion-icon name="speedometer-outline" class="text-2xl text-hydro-blue"></ion-icon>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">Performance Analyzer</h3>
+                            <p class="text-sm text-gray-500">v1.0.0 by Hydro Team</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">Detects performance bottlenecks, N+1 queries, memory leaks, and blocking operations in your code.</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>⭐ 4.8</span>
+                            <span>📥 1.2k</span>
+                        </div>
+                        <button class="bg-hydro-blue text-white px-4 py-2 rounded hover:bg-hydro-blue/90 transition-colors">
+                            Install
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Accessibility Analyzer Plugin -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-hydro-green/10 rounded-lg flex items-center justify-center mr-4">
+                            <ion-icon name="accessibility-outline" class="text-2xl text-hydro-green"></ion-icon>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">Accessibility Analyzer</h3>
+                            <p class="text-sm text-gray-500">v1.0.0 by Hydro Team</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">Ensures your web applications meet WCAG accessibility standards with comprehensive checks.</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>⭐ 4.9</span>
+                            <span>📥 856</span>
+                        </div>
+                        <button class="bg-hydro-green text-white px-4 py-2 rounded hover:bg-hydro-green/90 transition-colors">
+                            Install
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Custom Commands Plugin -->
+                <div class="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-hydro-purple/10 rounded-lg flex items-center justify-center mr-4">
+                            <ion-icon name="terminal-outline" class="text-2xl text-hydro-purple"></ion-icon>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">Custom Commands</h3>
+                            <p class="text-sm text-gray-500">v1.0.0 by Hydro Team</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">Adds utility commands like `hydro stats`, `hydro health`, and `hydro summary` for project insights.</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>⭐ 4.7</span>
+                            <span>📥 2.1k</span>
+                        </div>
+                        <button class="bg-hydro-purple text-white px-4 py-2 rounded hover:bg-hydro-purple/90 transition-colors">
+                            Install
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plugin Categories -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-hydro-blue/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <ion-icon name="analytics-outline" class="text-3xl text-hydro-blue"></ion-icon>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Analyzers</h3>
+                    <p class="text-gray-600 text-sm">Code quality, performance, and security analysis tools</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-hydro-green/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <ion-icon name="terminal-outline" class="text-3xl text-hydro-green"></ion-icon>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Commands</h3>
+                    <p class="text-gray-600 text-sm">Additional CLI commands and utilities</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-hydro-purple/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <ion-icon name="eye-outline" class="text-3xl text-hydro-purple"></ion-icon>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Visualizers</h3>
+                    <p class="text-gray-600 text-sm">Interactive charts, graphs, and code maps</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-hydro-orange/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <ion-icon name="code-slash-outline" class="text-3xl text-hydro-orange"></ion-icon>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Generators</h3>
+                    <p class="text-gray-600 text-sm">Code templates, boilerplates, and scaffolding</p>
+                </div>
+            </div>
+
+            <!-- Plugin Development -->
+            <div class="mt-16 bg-gray-50 rounded-2xl p-8">
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Build Your Own Plugin</h3>
+                    <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+                        Hydro's plugin system is designed to be simple and powerful. Create custom analyzers, commands, and visualizers to extend Hydro's capabilities.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button class="bg-hydro-blue text-white px-6 py-3 rounded-lg hover:bg-hydro-blue/90 transition-colors">
+                            <ion-icon name="book-outline" class="mr-2"></ion-icon>
+                            Plugin Documentation
+                        </button>
+                        <button class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                            <ion-icon name="code-slash-outline" class="mr-2"></ion-icon>
+                            View Examples
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section id="docs" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                    <ion-icon name="document-text-outline" class="inline-block mr-3 text-hydro-blue"></ion-icon>
+                    Developer Documentation
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Complete developer guide to mastering Hydro's capabilities and integrating it into your workflow
+                </p>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <div class="flex flex-wrap justify-center mb-12">
+                <button class="doc-tab active px-6 py-3 m-2 bg-white rounded-lg shadow-md text-hydro-blue font-semibold border-2 border-hydro-blue" data-tab="getting-started">
+                    <ion-icon name="play-outline" class="mr-2"></ion-icon>Getting Started
+                </button>
+                <button class="doc-tab px-6 py-3 m-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-hydro-blue font-semibold border-2 border-gray-200 hover:border-hydro-blue transition-colors" data-tab="configuration">
+                    <ion-icon name="settings-outline" class="mr-2"></ion-icon>Configuration
+                </button>
+                <button class="doc-tab px-6 py-3 m-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-hydro-blue font-semibold border-2 border-gray-200 hover:border-hydro-blue transition-colors" data-tab="analyzers">
+                    <ion-icon name="analytics-outline" class="mr-2"></ion-icon>Analyzers
+                </button>
+                <button class="doc-tab px-6 py-3 m-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-hydro-blue font-semibold border-2 border-gray-200 hover:border-hydro-blue transition-colors" data-tab="integration">
+                    <ion-icon name="git-branch-outline" class="mr-2"></ion-icon>Integration
+                </button>
+                <button class="doc-tab px-6 py-3 m-2 bg-white rounded-lg shadow-md text-gray-600 hover:text-hydro-blue font-semibold border-2 border-gray-200 hover:border-hydro-blue transition-colors" data-tab="troubleshooting">
+                    <ion-icon name="help-circle-outline" class="mr-2"></ion-icon>Troubleshooting
+                </button>
+            </div>
+            
+            <!-- Tab Content -->
+            <div class="space-y-8">
+                <!-- Getting Started Tab -->
+                <div id="getting-started" class="doc-content">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-2xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                <ion-icon name="download-outline" class="mr-2 text-hydro-blue"></ion-icon>
+                                Installation
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-800 mb-2">npm</h4>
+                                    <code class="block bg-gray-100 p-2 rounded text-sm">npm install -g hydro-cli</code>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-800 mb-2">yarn</h4>
+                                    <code class="block bg-gray-100 p-2 rounded text-sm">yarn global add hydro-cli</code>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-800 mb-2">pnpm</h4>
+                                    <code class="block bg-gray-100 p-2 rounded text-sm">pnpm add -g hydro-cli</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-8 rounded-2xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                <ion-icon name="rocket-outline" class="mr-2 text-hydro-green"></ion-icon>
+                                Quick Start
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 bg-hydro-blue text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Initialize</h4>
+                                        <p class="text-gray-600 text-sm">Set up Hydro in your project</p>
+                                        <code class="block mt-2 bg-gray-100 p-2 rounded text-sm">hydro init</code>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 bg-hydro-green text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Scan</h4>
+                                        <p class="text-gray-600 text-sm">Discover your codebase</p>
+                                        <code class="block mt-2 bg-gray-100 p-2 rounded text-sm">hydro scan</code>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 bg-hydro-purple text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Analyze</h4>
+                                        <p class="text-gray-600 text-sm">Run comprehensive analysis</p>
+                                        <code class="block mt-2 bg-gray-100 p-2 rounded text-sm">hydro analyze --all</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Configuration Tab -->
+                <div id="configuration" class="doc-content hidden">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <ion-icon name="settings-outline" class="mr-2 text-hydro-orange"></ion-icon>
+                            Configuration Guide
+                        </h3>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3">hydro.yml Structure</h4>
+                                <div class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+                                    <pre><code>project: "my-project"
+languages: ["javascript", "typescript", "python"]
+scan:
+  include: ["src", "lib"]
+  exclude: ["node_modules", "dist", ".git"]
+rules:
+  complexity:
+    maxFunctionLines: 50
+    maxCyclomaticComplexity: 10
+  naming:
+    style: "camelCase"
+  dependencies:
+    upgradeStrategy: "safe"
+outputs:
+  reports: ".hydro/reports"
+  codemods: ".hydro/codemods"</code></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 mb-2">Templates</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div><code class="text-hydro-blue">hydro init --template minimal</code></div>
+                                        <div><code class="text-hydro-blue">hydro init --template advanced</code></div>
+                                        <div><code class="text-hydro-blue">hydro init --template comprehensive</code></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 mb-2">Environment Variables</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div><code class="text-hydro-green">HYDRO_CONFIG_PATH</code> Custom config location</div>
+                                        <div><code class="text-hydro-green">HYDRO_DEBUG</code> Enable debug mode</div>
+                                        <div><code class="text-hydro-green">HYDRO_OUTPUT_DIR</code> Output directory</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analyzers Tab -->
+                <div id="analyzers" class="doc-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-2xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                <ion-icon name="analytics-outline" class="mr-2 text-hydro-purple"></ion-icon>
+                                Built-in Analyzers
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-hydro-blue pl-4">
+                                    <h4 class="font-semibold text-gray-800">Complexity Analyzer</h4>
+                                    <p class="text-gray-600 text-sm">Detects complex functions and code patterns</p>
+                                    <code class="text-xs text-hydro-blue">hydro analyze --complexity</code>
+                                </div>
+                                <div class="border-l-4 border-hydro-green pl-4">
+                                    <h4 class="font-semibold text-gray-800">Dependency Analyzer</h4>
+                                    <p class="text-gray-600 text-sm">Finds circular dependencies and issues</p>
+                                    <code class="text-xs text-hydro-green">hydro analyze --cycles</code>
+                                </div>
+                                <div class="border-l-4 border-hydro-orange pl-4">
+                                    <h4 class="font-semibold text-gray-800">Naming Analyzer</h4>
+                                    <p class="text-gray-600 text-sm">Enforces naming conventions</p>
+                                    <code class="text-xs text-hydro-orange">hydro analyze --naming</code>
+                                </div>
+                                <div class="border-l-4 border-hydro-red pl-4">
+                                    <h4 class="font-semibold text-gray-800">SQL Analyzer</h4>
+                                    <p class="text-gray-600 text-sm">Detects SQL anti-patterns and vulnerabilities</p>
+                                    <code class="text-xs text-hydro-red">hydro analyze --sql</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-8 rounded-2xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                <ion-icon name="flask-outline" class="mr-2 text-hydro-cyan"></ion-icon>
+                                Test Analyzer
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Coverage Analysis</h4>
+                                    <p class="text-gray-600 text-sm mb-2">Identifies untested code and test gaps</p>
+                                    <code class="block bg-gray-100 p-2 rounded text-sm">hydro analyze --tests</code>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Test Quality</h4>
+                                    <p class="text-gray-600 text-sm mb-2">Detects flaky tests and anti-patterns</p>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Random data usage</li>
+                                        <li>• Time-dependent tests</li>
+                                        <li>• Missing assertions</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Integration Tab -->
+                <div id="integration" class="doc-content hidden">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                            <ion-icon name="git-branch-outline" class="mr-2 text-hydro-blue"></ion-icon>
+                            CI/CD Integration
+                        </h3>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3">GitHub Actions</h4>
+                                <div class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+                                    <pre><code>name: Hydro Analysis
+on: [push, pull_request]
+jobs:
+  hydro:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install Hydro
+        run: npm install -g hydro-cli
+      - name: Run Analysis
+        run: hydro analyze --all --format json > hydro-report.json
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: hydro-report
+          path: hydro-report.json</code></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 mb-2">Pre-commit Hooks</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div><code class="text-hydro-blue">hydro fmt --check</code> Format check</div>
+                                        <div><code class="text-hydro-blue">hydro analyze --cycles</code> Dependency check</div>
+                                        <div><code class="text-hydro-blue">hydro analyze --naming</code> Naming check</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 mb-2">IDE Integration</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div>VS Code extension (coming soon)</div>
+                                        <div>IntelliJ plugin (planned)</div>
+                                        <div>Vim/Neovim support</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Troubleshooting Tab -->
+                <div id="troubleshooting" class="doc-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-2xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                <ion-icon name="help-circle-outline" class="mr-2 text-hydro-red"></ion-icon>
+                                Common Issues
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-red-400 pl-4">
+                                    <h4 class="font-semibold text-gray-800">"No files found"</h4>
+                                    <p class="text-gray-600 text-sm mb-2">Check your scan configuration</p>
+                                    <code class="text-xs text-hydro-blue">hydro scan --verbose</code>
+                                </div>
+                                <div class="border-l-4 border-yellow-400 pl-4">
+                                    <h4 class="font-semibold text-gray-800">"Analysis timeout"</h4>
+                                    <p class="text-gray-600 text-sm mb-2">Large codebase - use filters</p>
+                                    <code class="text-xs text-hydro-blue">hydro analyze --threshold 3</code>
+                                </div>
+                                <div class="border-l-4 border-blue-400 pl-4">
+                                    <h4 class="font-semibold text-gray-800">"Permission denied"</h4>
+                                    <p class="text-gray-600 text-sm mb-2">Check file permissions</p>
+                                    <code class="text-xs text-hydro-blue">chmod +x node_modules/.bin/hydro</code>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-8 rounded-2xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                                <ion-icon name="bug-outline" class="mr-2 text-hydro-orange"></ion-icon>
+                                Debug Mode
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Enable Debug</h4>
+                                    <code class="block bg-gray-100 p-2 rounded text-sm">HYDRO_DEBUG=1 hydro analyze</code>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Verbose Output</h4>
+                                    <code class="block bg-gray-100 p-2 rounded text-sm">hydro analyze --verbose</code>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-800 mb-2">Dry Run</h4>
+                                    <code class="block bg-gray-100 p-2 rounded text-sm">hydro analyze --dry-run</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                    Use Cases & Examples
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    See how Hydro can improve your development workflow
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Example 1 -->
+                <div class="bg-gradient-to-br from-hydro-blue to-hydro-purple p-8 rounded-2xl text-white">
+                    <h3 class="text-2xl font-bold mb-4">Legacy Code Analysis</h3>
+                    <p class="mb-6 opacity-90">Analyze large legacy codebases to identify technical debt and refactoring
+                        opportunities.</p>
+                    <div class="bg-black bg-opacity-20 p-4 rounded-lg">
+                        <code class="text-sm">
+                            hydro analyze --complexity --cycles<br>
+                            hydro codemap --type complexity<br>
+                            hydro write --readme
+                        </code>
+                    </div>
+                </div>
+
+                <!-- Example 2 -->
+                <div class="bg-gradient-to-br from-hydro-green to-hydro-cyan p-8 rounded-2xl text-white">
+                    <h3 class="text-2xl font-bold mb-4">Dependency Management</h3>
+                    <p class="mb-6 opacity-90">Keep your dependencies up-to-date and secure with automated analysis.</p>
+                    <div class="bg-black bg-opacity-20 p-4 rounded-lg">
+                        <code class="text-sm">
+                            hydro analyze --cycles<br>
+                            hydro update --check<br>
+                            hydro analyze --tests
+                        </code>
+                    </div>
+                </div>
+
+                <!-- Example 3 -->
+                <div class="bg-gradient-to-br from-hydro-orange to-hydro-red p-8 rounded-2xl text-white">
+                    <h3 class="text-2xl font-bold mb-4">CI/CD Integration</h3>
+                    <p class="mb-6 opacity-90">Integrate Hydro into your continuous integration pipeline for automated
+                        quality checks.</p>
+                    <div class="bg-black bg-opacity-20 p-4 rounded-lg">
+                        <code class="text-sm">
+                            # .github/workflows/hydro.yml<br>
+                            - name: Run Hydro Analysis<br>
+                              run: hydro analyze --all
+                        </code>
+                    </div>
+                </div>
+
+                <!-- Example 4 -->
+                <div class="bg-gradient-to-br from-hydro-purple to-hydro-blue p-8 rounded-2xl text-white">
+                    <h3 class="text-2xl font-bold mb-4">Team Onboarding</h3>
+                    <p class="mb-6 opacity-90">Help new team members understand project structure and code quality
+                        standards.</p>
+                    <div class="bg-black bg-opacity-20 p-4 rounded-lg">
+                        <code class="text-sm">
+                            hydro info<br>
+                            hydro codemap --type dependencies<br>
+                            hydro write --readme
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commands Section -->
+    <section id="commands" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                    <ion-icon name="terminal-outline" class="inline-block mr-3 text-hydro-blue"></ion-icon>
+                    Hydro Commands
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Master Hydro's powerful command-line interface with detailed explanations and examples
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Core Commands -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <ion-icon name="cog-outline" class="mr-2 text-hydro-blue"></ion-icon>
+                        Core Commands
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-hydro-blue pl-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <code class="text-lg font-mono text-hydro-blue">hydro init</code>
+                                <span class="text-sm text-gray-500">Initialize</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">Initialize Hydro configuration in your project</p>
+                            <div class="bg-gray-100 p-3 rounded text-sm font-mono">
+                                <div class="text-gray-700"># Interactive setup</div>
+                                <div class="text-hydro-blue">hydro init</div>
+                                <div class="text-gray-700"># Use template</div>
+                                <div class="text-hydro-blue">hydro init --template advanced</div>
+                            </div>
+                        </div>
+
+                        <div class="border-l-4 border-hydro-green pl-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <code class="text-lg font-mono text-hydro-green">hydro scan</code>
+                                <span class="text-sm text-gray-500">Discovery</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">Scan and discover files in your project</p>
+                            <div class="bg-gray-100 p-3 rounded text-sm font-mono">
+                                <div class="text-gray-700"># Basic scan</div>
+                                <div class="text-hydro-green">hydro scan</div>
+                                <div class="text-gray-700"># Full analysis</div>
+                                <div class="text-hydro-green">hydro scan --full</div>
+                            </div>
+                        </div>
+
+                        <div class="border-l-4 border-hydro-purple pl-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <code class="text-lg font-mono text-hydro-purple">hydro analyze</code>
+                                <span class="text-sm text-gray-500">Analysis</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">Run comprehensive code analysis</p>
+                            <div class="bg-gray-100 p-3 rounded text-sm font-mono">
+                                <div class="text-gray-700"># All analyzers</div>
+                                <div class="text-hydro-purple">hydro analyze --all</div>
+                                <div class="text-gray-700"># Specific analysis</div>
+                                <div class="text-hydro-purple">hydro analyze --cycles --complexity</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Commands -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <ion-icon name="rocket-outline" class="mr-2 text-hydro-orange"></ion-icon>
+                        Advanced Commands
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-hydro-orange pl-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <code class="text-lg font-mono text-hydro-orange">hydro codemap</code>
+                                <span class="text-sm text-gray-500">Visualization</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">Generate visual maps of your codebase</p>
+                            <div class="bg-gray-100 p-3 rounded text-sm font-mono">
+                                <div class="text-gray-700"># Dependency map</div>
+                                <div class="text-hydro-orange">hydro codemap --type dependencies</div>
+                                <div class="text-gray-700"># Complexity heatmap</div>
+                                <div class="text-hydro-orange">hydro codemap --type complexity</div>
+                            </div>
+                        </div>
+
+                        <div class="border-l-4 border-hydro-cyan pl-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <code class="text-lg font-mono text-hydro-cyan">hydro write</code>
+                                <span class="text-sm text-gray-500">Documentation</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">Generate documentation and files</p>
+                            <div class="bg-gray-100 p-3 rounded text-sm font-mono">
+                                <div class="text-gray-700"># Generate README</div>
+                                <div class="text-hydro-cyan">hydro write --readme</div>
+                                <div class="text-gray-700"># Use template</div>
+                                <div class="text-hydro-cyan">hydro write --readme --template comprehensive</div>
+                            </div>
+                        </div>
+
+                        <div class="border-l-4 border-hydro-red pl-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <code class="text-lg font-mono text-hydro-red">hydro update</code>
+                                <span class="text-sm text-gray-500">Maintenance</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">Update Hydro to the latest version</p>
+                            <div class="bg-gray-100 p-3 rounded text-sm font-mono">
+                                <div class="text-gray-700"># Check for updates</div>
+                                <div class="text-hydro-red">hydro update --check</div>
+                                <div class="text-gray-700"># Update to latest</div>
+                                <div class="text-hydro-red">hydro update</div>
+                            </div>
+                        </div>
+
+                        <div class="border-l-4 border-hydro-purple pl-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <code class="text-lg font-mono text-hydro-purple">hydro ai</code>
+                                <span class="text-sm text-gray-500">AI Assistant</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">AI-powered code analysis and suggestions</p>
+                            <div class="bg-gray-100 p-3 rounded text-sm font-mono">
+                                <div class="text-gray-700"># Ask questions about code</div>
+                                <div class="text-hydro-purple">hydro ai "What does this function do?"</div>
+                                <div class="text-gray-700"># Get suggestions</div>
+                                <div class="text-hydro-purple">hydro ai --suggest</div>
+                            </div>
+                        </div>
+
+                        <div class="border-l-4 border-hydro-green pl-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <code class="text-lg font-mono text-hydro-green">hydro plugin</code>
+                                <span class="text-sm text-gray-500">Plugin Management</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">Manage and install plugins for extended functionality</p>
+                            <div class="bg-gray-100 p-3 rounded text-sm font-mono">
+                                <div class="text-gray-700"># List installed plugins</div>
+                                <div class="text-hydro-green">hydro plugin list</div>
+                                <div class="text-gray-700"># Install plugin</div>
+                                <div class="text-hydro-green">hydro plugin install my-analyzer</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Command Options Reference -->
+            <div class="mt-12 bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <ion-icon name="list-outline" class="mr-2 text-gray-600"></ion-icon>
+                    Common Options
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                        <h4 class="font-semibold text-gray-800">Output Formats</h4>
+                        <div class="space-y-1 text-sm">
+                            <div><code class="text-hydro-blue">--format json</code> JSON output</div>
+                            <div><code class="text-hydro-blue">--format yaml</code> YAML output</div>
+                            <div><code class="text-hydro-blue">--format table</code> Table format</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-semibold text-gray-800">Severity Levels</h4>
+                        <div class="space-y-1 text-sm">
+                            <div><code class="text-hydro-blue">--threshold 1</code> Low and above</div>
+                            <div><code class="text-hydro-blue">--threshold 2</code> Medium and above</div>
+                            <div><code class="text-hydro-blue">--threshold 3</code> High and above</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-semibold text-gray-800">Safety Options</h4>
+                        <div class="space-y-1 text-sm">
+                            <div><code class="text-hydro-blue">--dry-run</code> Preview changes</div>
+                            <div><code class="text-hydro-blue">--force</code> Skip confirmations</div>
+                            <div><code class="text-hydro-blue">--backup</code> Create backups</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Section -->
+    <section id="api" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                    API Reference
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Programmatic access to Hydro's analysis capabilities
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-gray-800 text-white p-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span class="ml-4 text-sm font-mono">API Endpoints</span>
+                    </div>
+                </div>
+
+                <div class="p-8">
+                    <div class="space-y-8">
+                        <!-- GET /api/version -->
+                        <div class="border-l-4 border-hydro-blue pl-6">
+                            <div class="flex items-center space-x-4 mb-2">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-mono">GET</span>
+                                <code class="text-lg font-mono">/api/version</code>
+                            </div>
+                            <p class="text-gray-600 mb-4">Get current Hydro version and system information</p>
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <pre class="text-sm"><code>{
+  "hydro": {
+    "version": "1.0.0",
+    "name": "hydro-cli",
+    "description": "The Unified Development Environment Catalyst"
+  },
+  "timestamp": "2025-09-14T00:00:00.000Z"
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <!-- GET /api/status -->
+                        <div class="border-l-4 border-hydro-blue pl-6">
+                            <div class="flex items-center space-x-4 mb-2">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-mono">GET</span>
+                                <code class="text-lg font-mono">/api/status</code>
+                            </div>
+                            <p class="text-gray-600 mb-4">Get server status and runtime information</p>
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <pre class="text-sm"><code>{
+  "server": "running",
+  "timestamp": "2025-09-14T00:00:00.000Z",
+  "uptime": 3600,
+  "memory": {
+    "rss": 50000000,
+    "heapTotal": 20000000,
+    "heapUsed": 15000000
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 hydro-gradient rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">H</span>
+                        </div>
+                        <span class="text-xl font-bold">Hydro</span>
+                    </div>
+                    <p class="text-gray-400">The Unified Development Environment Catalyst</p>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Commands</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">hydro init</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">hydro scan</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">hydro analyze</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">hydro update</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">GitHub</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Examples</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">API Reference</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Community</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Discord</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Twitter</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Support</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Hydro. All rights reserved. Made with ❤️ for developers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="page_routing.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>

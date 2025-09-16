@@ -1,0 +1,245 @@
+# Hydro Configuration Example
+# This file shows all available configuration options for Hydro
+
+# Project identification
+project: example-enterprise-app
+
+# Programming languages used in your project
+# Hydro will adapt its analysis based on these languages
+languages:
+  - typescript
+  - javascript
+  - python
+  - java
+  - sql
+  - go
+
+# File scanning configuration
+scan:
+  # Directories and patterns to include in analysis
+  include:
+    - src
+    - lib
+    - api
+    - services
+    - components
+    - utils
+    - "**/*.ts"
+    - "**/*.js"
+    - "**/*.py"
+    - "**/*.java"
+    - "**/*.sql"
+  
+  # Directories and patterns to exclude from analysis
+  exclude:
+    - node_modules
+    - dist
+    - build
+    - coverage
+    - .git
+    - .hydro
+    - "**/*.min.js"
+    - "**/*.bundle.js"
+    - "**/*.d.ts"
+    - "**/vendor/**"
+    - "**/target/**"
+    - "**/__pycache__/**"
+    - "**/test-results/**"
+  
+  # Maximum file size to analyze (in bytes)
+  # Files larger than this will be skipped
+  maxFileSize: 10485760  # 1MB
+  
+  # Whether to follow symbolic links
+  followSymlinks: false
+
+# Code quality rules and thresholds
+rules:
+  # Naming convention rules
+  naming:
+    # Preferred naming style: camelCase, snake_case, PascalCase, kebab-case
+    style: camelCase
+    
+    # Exceptions to naming rules (e.g., constants, environment variables)
+    exceptions:
+      - API_KEY
+      - DATABASE_URL
+      - JWT_SECRET
+      - MAX_RETRIES
+      - DEFAULT_TIMEOUT
+  
+  # Code complexity rules
+  complexity:
+    # Maximum lines per function
+    maxFunctionLines: 600
+    
+    # Maximum cyclomatic complexity
+    maxCyclomaticComplexity: 80
+    
+    # Maximum number of parameters per function
+    maxParameterCount: 40
+  
+  # SQL-specific rules
+  sql:
+    # Database dialect: postgres, mysql, sqlite, mssql
+    dialect: postgres
+    
+    # Maximum SQL query length
+    maxQueryLength: 10000
+    
+    # Whether to allow raw SQL queries (security consideration)
+    allowRawQueries: false
+  
+  # Dependency management rules
+  dependencies:
+    # Upgrade strategy: safe (patch only), latest (all updates), conservative (manual)
+    upgradeStrategy: safe
+    
+    # Allowed license types
+    allowedLicenses:
+      - MIT
+      - Apache-2.0
+      - BSD-2-Clause
+      - BSD-3-Clause
+      - ISC
+    
+    # Blocked packages (security or policy reasons)
+    blockedPackages:
+      - lodash  # Use native methods instead
+      - moment  # Use date-fns or native Date instead
+      - request # Deprecated, use axios or fetch
+
+# Output configuration
+outputs:
+  # Directory for analysis reports
+  reports: .hydro/reports
+  
+  # Directory for generated code modifications
+  codemods: .hydro/codemods
+  
+  # Default output format: json, yaml, csv
+  format: json
+
+# Safety and operational settings
+safety:
+  # Whether operations run in dry-run mode by default
+  dryRunDefault: true
+  
+  # Whether to require tests to pass before applying changes
+  applyRequiresTests: true
+  
+  # Whether to create backups before making changes
+  backupBeforeChanges: true
+  
+  # Maximum number of files that can be modified in one operation
+  maxFilesPerOperation: 500
+
+# Git hooks and CI/CD integration
+hooks:
+  # Commands to run before commits
+  preCommit:
+    - hydro fmt --check
+    - hydro analyze --cycles
+    - hydro sql-lint --dialect postgres
+    - hydro test-coverage-suggest --threshold 80
+  
+  # CI/CD configuration
+  ci:
+    # CI provider: github, gitlab, circleci, jenkins
+    provider: github
+    
+    # Path to CI workflow file
+    workflow: .github/workflows/hydro-ci.yml
+
+# Advanced configuration (optional)
+advanced:
+  # Plugin configuration
+  plugins:
+    # Custom analyzers
+    analyzers:
+      - name: business-logic-analyzer
+        path: ./plugins/business-logic.js
+        config:
+          strictMode: true
+    
+    # Custom commands
+    commands:
+      - name: generate-docs
+        path: ./plugins/doc-generator.js
+  
+  # Performance tuning
+  performance:
+    # Enable caching of analysis results
+    enableCaching: true
+    
+    # Cache directory
+    cacheDirectory: .hydro/cache
+    
+    # Maximum cache age in hours
+    maxCacheAge: 24
+    
+    # Number of worker processes for parallel analysis
+    workerProcesses: 4
+  
+  # Notification settings
+  notifications:
+    # Slack webhook for CI notifications
+    slack:
+      webhook: https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+      channel: "#dev-quality"
+    
+    # Email notifications
+    email:
+      smtp:
+        host: smtp.company.com
+        port: 587
+        secure: false
+      from: hydro@company.com
+      to:
+        - dev-team@company.com
+  
+  # Integration settings
+  integrations:
+    # SonarQube integration
+    sonarqube:
+      url: https://sonarqube.company.com
+      token: your-sonarqube-token
+      projectKey: example-enterprise-app
+    
+    # JIRA integration for tech debt tracking
+    jira:
+      url: https://company.atlassian.net
+      username: hydro-bot@company.com
+      apiToken: your-jira-api-token
+      project: DEV
+      issueType: "Technical Debt"
+
+# Environment-specific overrides
+environments:
+  development:
+    safety:
+      dryRunDefault: false
+      applyRequiresTests: false
+    rules:
+      complexity:
+        maxFunctionLines: 150  # More lenient in dev
+  
+  staging:
+    safety:
+      dryRunDefault: true
+      applyRequiresTests: true
+    hooks:
+      preCommit:
+        - hydro scan --full
+        - hydro analyze --all
+  
+  production:
+    safety:
+      dryRunDefault: true
+      applyRequiresTests: true
+      backupBeforeChanges: true
+      maxFilesPerOperation: 10  # Very conservative
+    rules:
+      complexity:
+        maxFunctionLines: 80   # Strict in production
+        maxCyclomaticComplexity: 6

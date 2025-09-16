@@ -1,0 +1,25 @@
+{
+  "name": "hydro-web",
+  "version": "1.0.0",
+  "description": "Hydro Web Interface - SPA for Hydro CLI tool",
+  "type": "module",
+  "main": "start.js",
+  "scripts": {
+    "start": "node start.js",
+    "dev": "node --watch start.js",
+    "build": "echo 'No build step needed for this SPA'"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "keywords": [
+    "hydro",
+    "cli",
+    "web",
+    "spa",
+    "development",
+    "tools"
+  ],
+  "author": "Hydro Team",
+  "license": "MIT"
+}
