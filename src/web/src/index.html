@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydro - The Unified Development Environment Catalyst</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+        <!-- React and React DOM -->
+        <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+        <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+        
+        <!-- Babel Standalone for JSX transformation -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.5/babel.min.js"></script>
+
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'hydro-blue': '#3B82F6',
+                        'hydro-purple': '#8B5CF6',
+                        'hydro-cyan': '#06B6D4',
+                        'hydro-green': '#10B981',
+                        'hydro-orange': '#F59E0B',
+                        'hydro-red': '#EF4444',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-in-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'slide-in-left': 'slideInLeft 0.8s ease-out',
+                        'slide-in-right': 'slideInRight 0.8s ease-out',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideInLeft: {
+                            '0%': { transform: 'translateX(-30px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(30px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+
+</head>
+
+<body id="root">
+    <!-- React will mount here -->
+    <script type="text/babel" src="components/Visualization.js"></script>
+    <script type="text/babel" src="pages/Home.js"></script>
+    <script type="text/babel" src="pages/API.js"></script>
+    <script type="text/babel" src="pages/Docs.js"></script>
+    <script type="text/babel" src="pages/Plugins.js"></script>
+    <script type="text/babel" src="pages/Commands.js"></script>
+    <script type="text/babel" src="pages/AI.js"></script>
+    <script type="text/babel" src="pages/Analytics.js"></script>
+    <script type="text/babel" src="pages/Analyzers.js"></script>
+    <script type="text/babel" src="pages/Generators.js"></script>
+    <script type="text/babel" src="App.js"></script>
+</body>
+
+</html>

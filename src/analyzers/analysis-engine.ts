@@ -3,10 +3,13 @@
  */
 
 import { logger } from '@/core/logger';
+import { errorHandler, createFileNotFoundError, createParsingError } from '@/utils/error-handler';
 import { ComplexityAnalyzer } from './complexity-analyzer';
 import { DependencyAnalyzer } from './dependency-analyzer';
 import { NamingAnalyzer } from './naming-analyzer';
+import { SecurityAnalyzer } from './security-analyzer';
 import { SqlAnalyzer } from './sql-analyzer';
+import { TeamMetricsAnalyzer } from './team-metrics-analyzer';
 import { TestAnalyzer } from './test-analyzer';
 
 import type { 
@@ -22,6 +25,7 @@ export interface AnalysisOptions {
   comprehensive: boolean;
   threshold: number;
   includeMetrics: boolean;
+  progressCallback?: (info: any) => void;
 }
 
 export class AnalysisEngine {
@@ -29,16 +33,23 @@ export class AnalysisEngine {
     complexity: ComplexityAnalyzer;
     dependency: DependencyAnalyzer;
     naming: NamingAnalyzer;
+    security: SecurityAnalyzer;
     sql: SqlAnalyzer;
+    teamMetrics: TeamMetricsAnalyzer;
     test: TestAnalyzer;
   };
+  
+  private readonly MAX_CONCURRENT_ANALYZERS = 3; // Limit concurrent analyzer execution
+  private readonly BULK_ANALYSIS_BATCH_SIZE = 100; // Process files in batches during analysis
 
   constructor() {
     this.analyzers = {
       complexity: new ComplexityAnalyzer(),
       dependency: new DependencyAnalyzer(),
       naming: new NamingAnalyzer(),
+      security: new SecurityAnalyzer(),
       sql: new SqlAnalyzer(),
+      teamMetrics: new TeamMetricsAnalyzer(),
       test: new TestAnalyzer(),
     };
   }
@@ -59,60 +70,38 @@ export class AnalysisEngine {
       const issues: Issue[] = [];
       const startTime = Date.now();
 
-      // Run all analyzers
+      // Run all analyzers with optimized bulk processing
       if (options.comprehensive) {
         spinner.update('Running comprehensive analysis...');
         
-        // Dependency analysis
-        const dependencyIssues = await this.analyzers.dependency.analyze(
-          files, 
-          config.rules.dependencies
-        );
-        issues.push(...dependencyIssues);
-
-        // Complexity analysis
-        const complexityIssues = await this.analyzers.complexity.analyze(
-          files,
-          config.rules.complexity
-        );
-        issues.push(...complexityIssues);
-
-        // Naming analysis
-        if (config.rules.naming) {
-          const namingIssues = await this.analyzers.naming.analyze(
-            files,
-            config.rules.naming
-          );
-          issues.push(...namingIssues);
+        // Process files in batches for better memory management
+        const analysisBatches = this.createAnalysisBatches(files, this.BULK_ANALYSIS_BATCH_SIZE);
+        let processedBatches = 0;
+        
+        for (const batch of analysisBatches) {
+          spinner.update(`Analyzing batch ${processedBatches + 1}/${analysisBatches.length} (${batch.length} files)...`);
+          
+          // Run analyzers concurrently with controlled concurrency
+          const batchIssues = await this.runAnalyzersConcurrently(batch, config, true);
+          issues.push(...batchIssues);
+          
+          processedBatches++;
+          
+          // Memory management: force GC every few batches
+          if (processedBatches % 5 === 0 && global.gc) {
+            global.gc();
+          }
         }
-
-        // SQL analysis
-        if (config.rules.sql && config.languages.includes('sql')) {
-          const sqlIssues = await this.analyzers.sql.analyze(
-            files,
-            config.rules.sql
-          );
-          issues.push(...sqlIssues);
-        }
-
-        // Test analysis
-        const testIssues = await this.analyzers.test.analyze(files);
-        issues.push(...testIssues);
       } else {
         spinner.update('Running basic analysis...');
         
-        // Basic analysis - just dependency and complexity
-        const dependencyIssues = await this.analyzers.dependency.analyze(
-          files,
-          config.rules.dependencies
-        );
-        issues.push(...dependencyIssues);
-
-        const complexityIssues = await this.analyzers.complexity.analyze(
-          files,
-          config.rules.complexity
-        );
-        issues.push(...complexityIssues);
+        // Basic analysis with batch processing
+        const analysisBatches = this.createAnalysisBatches(files, this.BULK_ANALYSIS_BATCH_SIZE);
+        
+        for (const batch of analysisBatches) {
+          const batchIssues = await this.runAnalyzersConcurrently(batch, config, false);
+          issues.push(...batchIssues);
+        }
       }
 
       // Filter by threshold
@@ -343,6 +332,90 @@ export class AnalysisEngine {
       issues.push(...namingIssues);
     }
 
+    return issues;
+  }
+
+  /**
+   * Create analysis batches for better memory management
+   */
+  private createAnalysisBatches(files: FileInfo[], batchSize: number): FileInfo[][] {
+    const batches: FileInfo[][] = [];
+    
+    for (let i = 0; i < files.length; i += batchSize) {
+      batches.push(files.slice(i, i + batchSize));
+    }
+    
+    return batches;
+  }
+
+  /**
+   * Run analyzers concurrently with controlled concurrency
+   */
+  private async runAnalyzersConcurrently(
+    files: FileInfo[],
+    config: HydroConfig,
+    comprehensive: boolean
+  ): Promise<Issue[]> {
+    const issues: Issue[] = [];
+    
+    // Create analyzer tasks
+    const analyzerTasks: Array<() => Promise<Issue[]>> = [];
+    
+    // Always run dependency and complexity analysis
+    analyzerTasks.push(async () => {
+      const dependencyIssues = await this.analyzers.dependency.analyze(files, config.rules.dependencies);
+      return dependencyIssues;
+    });
+    
+    analyzerTasks.push(async () => {
+      const complexityIssues = await this.analyzers.complexity.analyze(files, config.rules.complexity);
+      return complexityIssues;
+    });
+    
+    if (comprehensive) {
+      // Add comprehensive analysis tasks
+      if (config.rules.naming) {
+        analyzerTasks.push(async () => {
+          const namingIssues = await this.analyzers.naming.analyze(files, config.rules.naming!);
+          return namingIssues;
+        });
+      }
+      
+      if (config.rules.sql && config.languages.includes('sql')) {
+        analyzerTasks.push(async () => {
+          const sqlIssues = await this.analyzers.sql.analyze(files, config.rules.sql!);
+          return sqlIssues;
+        });
+      }
+      
+      if (config.rules.security) {
+        analyzerTasks.push(async () => {
+          const securityIssues = await this.analyzers.security.analyze(files, config.rules.security!);
+          return securityIssues;
+        });
+      }
+      
+      analyzerTasks.push(async () => {
+        const testIssues = await this.analyzers.test.analyze(files);
+        return testIssues;
+      });
+    }
+    
+    // Run analyzers with controlled concurrency
+    const concurrencyLimit = Math.min(this.MAX_CONCURRENT_ANALYZERS, analyzerTasks.length);
+    const results: Issue[][] = [];
+    
+    for (let i = 0; i < analyzerTasks.length; i += concurrencyLimit) {
+      const batch = analyzerTasks.slice(i, i + concurrencyLimit);
+      const batchResults = await Promise.all(batch.map(task => task()));
+      results.push(...batchResults);
+    }
+    
+    // Flatten results
+    for (const result of results) {
+      issues.push(...result);
+    }
+    
     return issues;
   }
 

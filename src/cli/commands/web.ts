@@ -43,7 +43,12 @@ export class WebCommand extends BaseCommand {
     logger.info(`📡 Server will run on http://${host}:${port}`);
 
     try {
-      const webDir = path.join(process.cwd(), 'src', 'web');
+      // Get the web directory relative to the Hydro installation
+      const hydroDir = path.dirname(path.dirname(__dirname)); // Go up from dist/cli/commands to dist, then to src
+      const webDir = path.join(hydroDir, 'src', 'web');
+      
+      logger.info(`🔍 Looking for web directory at: ${webDir}`);
+      logger.info(`🔍 Current __dirname: ${__dirname}`);
       
       // First, ensure dependencies are installed (unless skipped)
       if (!skipInstall) {

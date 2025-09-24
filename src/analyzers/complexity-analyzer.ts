@@ -10,9 +10,10 @@ import type { FileInfo } from '@/core/file-scanner';
 
 export class ComplexityAnalyzer {
   private fileScanner = new FileScanner();
+  private readonly BULK_PROCESSING_BATCH_SIZE = 50; // Process files in smaller batches
 
   /**
-   * Analyze files for complexity issues
+   * Analyze files for complexity issues with optimized bulk processing
    */
   public async analyze(
     files: FileInfo[],
@@ -25,13 +26,35 @@ export class ComplexityAnalyzer {
 
     logger.debug(`Analyzing complexity for ${codeFiles.length} files`);
 
-    for (const file of codeFiles) {
-      try {
-        const content = await this.fileScanner.readFileContent(file.path);
-        const fileIssues = await this.analyzeFile(file, content, rules);
+    // Process files in batches for better memory management
+    const batches = this.createBatches(codeFiles, this.BULK_PROCESSING_BATCH_SIZE);
+    
+    for (let i = 0; i < batches.length; i++) {
+      const batch = batches[i];
+      logger.debug(`Processing complexity batch ${i + 1}/${batches.length} (${batch!.length} files)`);
+      
+      // Process batch concurrently
+      const batchPromises = batch!.map(async (file) => {
+        try {
+          const content = await this.fileScanner.readFileContent(file.path);
+          const fileIssues = await this.analyzeFile(file, content, rules);
+          return fileIssues;
+        } catch (error) {
+          logger.debug(`Failed to analyze complexity for ${file.path}: ${error}`);
+          return [];
+        }
+      });
+
+      const batchResults = await Promise.all(batchPromises);
+      
+      // Flatten and add results
+      for (const fileIssues of batchResults) {
         issues.push(...fileIssues);
-      } catch (error) {
-        logger.debug(`Failed to analyze complexity for ${file.path}: ${error}`);
+      }
+      
+      // Memory management: force GC every few batches
+      if (i % 3 === 0 && global.gc) {
+        global.gc();
       }
     }
 
@@ -335,6 +358,19 @@ export class ComplexityAnalyzer {
     }
 
     return maxDepth;
+  }
+
+  /**
+   * Create batches for bulk processing
+   */
+  private createBatches<T>(items: T[], batchSize: number): T[][] {
+    const batches: T[][] = [];
+    
+    for (let i = 0; i < items.length; i += batchSize) {
+      batches.push(items.slice(i, i + batchSize));
+    }
+    
+    return batches;
   }
 
   /**

@@ -191,11 +191,14 @@ class ScanCommand extends BaseCommand {
    */
   private groupIssuesByCategory(issues: AnalysisResult['issues']): Record<string, AnalysisResult['issues']> {
     return issues.reduce((groups, issue) => {
-      const category = issue.category;
+      const category = issue.category || 'Other';
       if (!groups[category]) {
         groups[category] = [];
       }
-      groups[category].push(issue);
+      const categoryGroup = groups[category];
+      if (categoryGroup) {
+        categoryGroup.push(issue);
+      }
       return groups;
     }, {} as Record<string, AnalysisResult['issues']>);
   }

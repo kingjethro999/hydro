@@ -1,111 +1,116 @@
 # Hydro Web Interface
 
-A modern Single Page Application (SPA) for the Hydro CLI tool, providing an interactive web interface for code analysis, plugin management, and AI-powered insights.
+A modern, interactive web interface for the Hydro development environment catalyst.
 
 ## Features
 
-- **Single Page Application** with client-side routing
-- **Interactive Command Demos** with live terminal simulations
-- **Plugin Marketplace** for discovering and installing plugins
-- **AI Assistant Interface** for code analysis and suggestions
-- **Analytics Dashboard** for project insights
-- **Responsive Design** that works on all devices
+- **Interactive Terminal Demo**: Try Hydro's commands with realistic terminal output
+- **Real-time Analytics Dashboard**: View project metrics and analyzer status
+- **Plugin Marketplace**: Browse and manage Hydro plugins
+- **Comprehensive Documentation**: Complete guides and API reference
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Modern UI**: Built with Tailwind CSS and smooth animations
 
 ## Quick Start
 
-### Start the Web Server
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-```bash
-# From the project root
-hydro web
+2. **Start the development server**:
+   ```bash
+   npm start
+   ```
 
-# Or with custom options
-hydro web --port 3000 --host localhost --open
-```
-
-### Direct Server Start
-
-```bash
-# Navigate to web directory
-cd src/web
-
-# Install dependencies
-npm install
-
-# Start the server
-npm start
-```
-
-## Pages
-
-- **Home** (`/`) - Landing page with hero section and features overview
-- **Features** (`/features`) - Detailed feature descriptions
-- **Plugins** (`/plugins`) - Plugin marketplace and management
-- **Commands** (`/commands`) - Interactive command reference with examples
-- **Versions** (`/versions`) - Version information and changelog
-
-## API Endpoints
-
-- `GET /api/health` - Server health check
-- `GET /api/commands` - Available CLI commands
-- `GET /api/plugins` - Available plugins
+3. **Open your browser**:
+   Navigate to `http://localhost:3000`
 
 ## Development
-
-> **Note**: The web folder has been cleaned up. Old unused files have been moved to the `ignore/` folder for reference. The current implementation uses a clean SPA structure with Express server and client-side routing.
 
 ### Project Structure
 
 ```
 src/web/
-├── public/           # Static assets served by Express
-│   ├── index.html    # Main HTML template
-│   ├── app.js        # SPA application logic
-│   ├── styles.css    # Application styles
-│   └── favicon.svg   # Favicon
-├── ignore/           # Unused files (old implementation)
-│   ├── index.html    # Old HTML file
-│   ├── index.js      # Old JavaScript file
-│   ├── page_routing.js # Old routing implementation
-│   └── README.md     # Explanation of ignored files
-├── server.js         # Express server
-├── start.js          # Server entry point
-├── package.json      # Dependencies and scripts
-└── README.md         # This documentation
+├── public/                 # Static files served by Express
+│   ├── index.html         # Main HTML file
+│   ├── index.js           # Main JavaScript application
+│   └── page_routing.js    # Client-side routing
+├── server.js              # Express server
+├── start.js               # Entry point
+└── package.json           # Dependencies and scripts
 ```
 
-### Adding New Pages
+### Available Scripts
 
-1. Add route to `routes` object in `app.js`
-2. Create page method (e.g., `getNewPage()`)
-3. Add navigation link in `index.html`
-4. Implement page-specific functionality
+- `npm start` - Start the production server
+- `npm run dev` - Start with file watching for development
+- `npm run build` - Build for production (currently no build step needed)
 
-### Styling
+### API Endpoints
 
-The application uses a custom CSS framework with:
-- CSS Grid and Flexbox for layouts
-- CSS Custom Properties for theming
-- Responsive design with mobile-first approach
-- Smooth animations and transitions
+The web interface includes several API endpoints:
 
-## Deployment
+- `GET /api/health` - Server health check
+- `GET /api/version` - Hydro version information
+- `GET /api/status` - Server status and metrics
+- `GET /api/plugins` - Available plugins
+- `GET /api/commands` - Hydro commands reference
+- `GET /api/ai/capabilities` - AI features and capabilities
+- `GET /api/analysis/status` - Project analysis metrics
 
-The web interface can be deployed to any static hosting service or containerized with Docker.
+### Customization
 
-### Environment Variables
+#### Styling
+The interface uses Tailwind CSS with custom Hydro color scheme:
+- `hydro-blue`: #3B82F6
+- `hydro-purple`: #8B5CF6
+- `hydro-cyan`: #06B6D4
+- `hydro-green`: #10B981
+- `hydro-orange`: #F59E0B
+- `hydro-red`: #EF4444
 
-- `PORT` - Server port (default: 3000)
-- `HOST` - Server host (default: localhost)
-- `NODE_ENV` - Environment (development/production)
+#### JavaScript Features
+- **HydroWebApp**: Main application class with state management
+- **HydroRouter**: Client-side routing system
+- **Interactive Demos**: Terminal simulation with typing animations
+- **Real-time Updates**: Live data from API endpoints
+- **Responsive Design**: Mobile-first approach
 
-## Browser Support
+### Browser Support
 
 - Chrome 90+
 - Firefox 88+
 - Safari 14+
 - Edge 90+
 
+### Performance
+
+The web interface is optimized for performance:
+- Lazy loading of images and content
+- Intersection Observer for animations
+- Throttled scroll and resize handlers
+- Minimal JavaScript bundle size
+- Efficient DOM updates
+
+## Integration with Hydro CLI
+
+The web interface is designed to work alongside the Hydro CLI:
+
+1. **Command Reference**: Shows all available Hydro commands
+2. **Interactive Demos**: Demonstrates CLI functionality
+3. **Plugin Management**: Install and manage plugins
+4. **Analysis Results**: Display CLI analysis output
+5. **Documentation**: Complete guides for CLI usage
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see the main project LICENSE file for details.

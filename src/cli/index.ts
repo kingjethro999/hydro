@@ -11,7 +11,9 @@ import { ConfigManager } from '@/core/config';
 
 import { AICommand } from './commands/ai';
 import { AnalyzeCommand } from './commands/analyze';
+import { BulkCommand } from './commands/bulk';
 import { CodeMapCommand } from './commands/codemap';
+import { CrudCommand } from './commands/crud';
 import { GenerateCommand } from './commands/generate';
 import { InfoCommand } from './commands/info';
 import { InitCommand } from './commands/init';
@@ -58,13 +60,15 @@ async function main(): Promise<void> {
     program.addCommand(new InitCommand().getCommand());
     program.addCommand(new ScanCommand().getCommand());
     program.addCommand(new AnalyzeCommand().getCommand());
+    program.addCommand(new BulkCommand().getCommand());
+    program.addCommand(new CrudCommand().getCommand());
     program.addCommand(new CodeMapCommand().getCommand());
     program.addCommand(new GenerateCommand().getCommand());
     program.addCommand(new WriteCommand().getCommand());
-  program.addCommand(new AICommand().getCommand());
-  program.addCommand(new PluginCommand().getCommand());
-  program.addCommand(new WebCommand().getCommand());
-  program.addCommand(new UpdateCommand().getCommand());
+    program.addCommand(new AICommand().getCommand());
+    program.addCommand(new PluginCommand().getCommand());
+    program.addCommand(new WebCommand().getCommand());
+    program.addCommand(new UpdateCommand().getCommand());
     program.addCommand(new VersionCommand().getCommand());
     program.addCommand(new InfoCommand().getCommand());
 

@@ -7,7 +7,7 @@
     "hydro": "dist/cli/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "dev": "tsx src/cli/index.ts",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -83,6 +83,7 @@
     "prettier": "^3.0.3",
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.1",
+    "tsc-alias": "^1.8.16",
     "tsx": "^3.14.0",
     "typescript": "^5.3.3"
   },

@@ -28,6 +28,12 @@ export interface ScanResult {
 }
 
 export class FileScanner {
+  private fileCache = new Map<string, { fileInfo: FileInfo; timestamp: number }>();
+  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  private readonly MAX_CONCURRENT_FILES = 50; // Limit concurrent file operations
+  private readonly OPTIMAL_BATCH_SIZE = 200; // Optimized batch size
+  private readonly STREAM_THRESHOLD = 1024 * 1024; // 1MB - use streaming for larger files
+
   private languageMap: Record<string, string> = {
     '.js': 'javascript',
     '.jsx': 'javascript',
@@ -113,20 +119,48 @@ export class FileScanner {
 
       logger.debug(`Found ${allFiles.size} files matching patterns`);
 
-      // Process each file
-      for (const filePath of allFiles) {
-        try {
-          const fileInfo = await this.analyzeFile(filePath, rootPath, config);
+      // Process files in optimized batches with concurrency control
+      const fileArray = Array.from(allFiles);
+      const totalFiles = fileArray.length;
+      
+      // Use dynamic batch sizing based on file count
+      const batchSize = Math.min(
+        this.OPTIMAL_BATCH_SIZE,
+        Math.max(50, Math.floor(totalFiles / 10))
+      );
+      
+      for (let i = 0; i < fileArray.length; i += batchSize) {
+        const batch = fileArray.slice(i, i + batchSize);
+        
+        // Process batch with concurrency control
+        const batchResults = await this.processBatchWithConcurrencyControl(
+          batch,
+          rootPath,
+          config
+        );
+        
+        for (const { fileInfo, error, filePath } of batchResults) {
           if (fileInfo) {
             result.files.push(fileInfo);
             result.totalSize += fileInfo.size;
             if (fileInfo.language) {
               result.languages.add(fileInfo.language);
             }
+          } else if (error) {
+            logger.debug(`Skipped file: ${error}`);
+            result.skippedFiles.push(filePath);
           }
-        } catch (error) {
-          logger.debug(`Skipped file ${filePath}: ${error}`);
-          result.skippedFiles.push(filePath);
+        }
+
+        // Update progress with more detailed information
+        const processed = Math.min(i + batchSize, totalFiles);
+        const progress = Math.min(100, Math.round((processed / totalFiles) * 100));
+        const processedSize = this.formatBytes(result.totalSize);
+        spinner.update(`Scanning files... ${progress}% (${processed}/${totalFiles}, ${processedSize})`);
+        
+        // Force garbage collection hint for large batches
+        if (i % (batchSize * 5) === 0 && global.gc) {
+          global.gc();
         }
       }
 
@@ -149,6 +183,12 @@ export class FileScanner {
     rootPath: string,
     config: ScanConfig
   ): Promise<FileInfo | null> {
+    // Check cache first
+    const cached = this.fileCache.get(filePath);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      return cached.fileInfo;
+    }
+
     const stats = await fs.stat(filePath);
 
     // Check file size limit
@@ -166,7 +206,7 @@ export class FileScanner {
     const extension = path.extname(filePath).toLowerCase();
     const language = this.languageMap[extension] || null;
 
-    return {
+    const fileInfo: FileInfo = {
       path: filePath,
       relativePath,
       size: stats.size,
@@ -174,6 +214,11 @@ export class FileScanner {
       language,
       lastModified: stats.mtime,
     };
+
+    // Cache the result
+    this.fileCache.set(filePath, { fileInfo, timestamp: Date.now() });
+
+    return fileInfo;
   }
 
   /**
@@ -275,8 +320,11 @@ export class FileScanner {
       if (!stats[lang]) {
         stats[lang] = { files: 0, size: 0 };
       }
-      stats[lang].files++;
-      stats[lang].size += file.size;
+      const langStats = stats[lang];
+      if (langStats) {
+        langStats.files++;
+        langStats.size += file.size;
+      }
     });
 
     // Add percentage calculation
@@ -316,10 +364,47 @@ export class FileScanner {
   }
 
   /**
-   * Get file content with encoding detection
+   * Process batch with concurrency control to prevent memory overload
+   */
+  private async processBatchWithConcurrencyControl(
+    batch: string[],
+    rootPath: string,
+    config: ScanConfig
+  ): Promise<Array<{ fileInfo: FileInfo | null; error: any; filePath: string }>> {
+    const results: Array<{ fileInfo: FileInfo | null; error: any; filePath: string }> = [];
+    
+    // Process files in smaller chunks to control concurrency
+    for (let i = 0; i < batch.length; i += this.MAX_CONCURRENT_FILES) {
+      const chunk = batch.slice(i, i + this.MAX_CONCURRENT_FILES);
+      
+      const chunkPromises = chunk.map(async (filePath) => {
+        try {
+          const fileInfo = await this.analyzeFile(filePath, rootPath, config);
+          return { fileInfo, error: null, filePath };
+        } catch (error) {
+          return { fileInfo: null, error, filePath };
+        }
+      });
+
+      const chunkResults = await Promise.all(chunkPromises);
+      results.push(...chunkResults);
+    }
+    
+    return results;
+  }
+
+  /**
+   * Get file content with encoding detection and streaming for large files
    */
   public async readFileContent(filePath: string): Promise<string> {
     try {
+      const stats = await fs.stat(filePath);
+      
+      // Use streaming for large files to prevent memory issues
+      if (stats.size > this.STREAM_THRESHOLD) {
+        return await this.readFileContentStreaming(filePath);
+      }
+      
       return await fs.readFile(filePath, 'utf8');
     } catch (error) {
       // Try with different encodings if UTF-8 fails
@@ -329,5 +414,56 @@ export class FileScanner {
         throw new Error(`Unable to read file: ${filePath}`);
       }
     }
+  }
+
+  /**
+   * Read large file content using streaming to manage memory
+   */
+  private async readFileContentStreaming(filePath: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      const stream = fs.createReadStream(filePath, { encoding: 'utf8' });
+      
+      stream.on('data', (chunk) => {
+        chunks.push(Buffer.from(chunk));
+      });
+      
+      stream.on('end', () => {
+        resolve(Buffer.concat(chunks).toString('utf8'));
+      });
+      
+      stream.on('error', (error) => {
+        reject(error);
+      });
+    });
+  }
+
+  /**
+   * Clear the file cache
+   */
+  public clearCache(): void {
+    this.fileCache.clear();
+  }
+
+  /**
+   * Clean up expired cache entries
+   */
+  public cleanupCache(): void {
+    const now = Date.now();
+    for (const [key, value] of this.fileCache.entries()) {
+      if (now - value.timestamp > this.CACHE_TTL) {
+        this.fileCache.delete(key);
+      }
+    }
+  }
+
+  /**
+   * Get cache statistics
+   */
+  public getCacheStats(): { size: number; hitRate: number } {
+    return {
+      size: this.fileCache.size,
+      hitRate: 0, // Would need to track hits/misses for accurate hit rate
+    };
   }
 }

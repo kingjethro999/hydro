@@ -227,8 +227,9 @@ export class ConfigManager {
       for (const file of files) {
         if (typeof file === 'string') {
           const ext = path.extname(file).toLowerCase();
-          if (languageMap[ext]) {
-            extensions.add(languageMap[ext]);
+          const language = languageMap[ext];
+          if (language) {
+            extensions.add(language);
           }
         }
       }

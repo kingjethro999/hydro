@@ -319,9 +319,12 @@ export class AnalyzeCommand extends BaseCommand {
       if (issues.length > 0) {
         // Group by category
         const categories = issues.reduce((cats, issue) => {
-          const category = issue.category;
+          const category = issue.category || 'unknown';
           if (!cats[category]) cats[category] = [];
-          cats[category].push(issue);
+          const categoryArray = cats[category];
+          if (categoryArray) {
+            categoryArray.push(issue);
+          }
           return cats;
         }, {} as Record<string, any[]>);
 

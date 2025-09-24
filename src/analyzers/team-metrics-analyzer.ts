@@ -136,14 +136,17 @@ export class TeamMetricsAnalyzer {
       linesAddedPerDeveloper[author] += commit.linesAdded;
       linesRemovedPerDeveloper[author] += commit.linesRemoved;
       filesChangedPerDeveloper[author] += commit.filesChanged;
-      activeDays[author].add(commit.date.toISOString().split('T')[0]);
+      const dateStr = commit.date.toISOString().split('T')[0];
+      if (dateStr) {
+        activeDays[author]!.add(dateStr);
+      }
 
       // Calculate average commit size
       const commitSize = commit.linesAdded + commit.linesRemoved;
       if (!averageCommitSize[author]) {
         averageCommitSize[author] = 0;
       }
-      averageCommitSize[author] = (averageCommitSize[author] + commitSize) / 2;
+      averageCommitSize[author] = ((averageCommitSize[author] || 0) + commitSize) / 2;
     }
 
     // Convert active days to counts
@@ -182,9 +185,10 @@ export class TeamMetricsAnalyzer {
       // Process git history to determine file ownership
       for (const commit of gitHistory.commits) {
         for (const file of commit.files) {
-          if (fileOwnership[file]) {
-            if (!fileOwnership[file].includes(commit.author)) {
-              fileOwnership[file].push(commit.author);
+          const ownership = fileOwnership[file];
+          if (ownership && commit.author) {
+            if (!ownership.includes(commit.author)) {
+              ownership.push(commit.author);
             }
           }
         }
@@ -275,7 +279,10 @@ export class TeamMetricsAnalyzer {
           if (!maintenanceBurden[author]) {
             maintenanceBurden[author] = 0;
           }
-          maintenanceBurden[author] += authorCommitCounts[authors.indexOf(author)];
+          const authorIndex = authors.indexOf(author);
+          if (authorIndex >= 0) {
+            maintenanceBurden[author] += authorCommitCounts[authorIndex] || 0;
+          }
         }
       }
     }
@@ -341,7 +348,8 @@ export class TeamMetricsAnalyzer {
     for (const [file, owners] of Object.entries(fileOwnership)) {
       if (owners.length === 1) {
         const currentOwner = owners[0];
-        const ownerExpertise = expertiseAreas[currentOwner] || [];
+        if (currentOwner) {
+          const ownerExpertise = expertiseAreas[currentOwner] || [];
 
         // Find developers with similar expertise who could learn this file
         for (const [developer, expertise] of Object.entries(expertiseAreas)) {
@@ -357,6 +365,7 @@ export class TeamMetricsAnalyzer {
               });
             }
           }
+        }
         }
       }
     }
@@ -379,10 +388,12 @@ export class TeamMetricsAnalyzer {
 
     for (const commit of commits) {
       const date = commit.date.toISOString().split('T')[0];
-      if (!commitsByDate.has(date)) {
-        commitsByDate.set(date, []);
+      if (date) {
+        if (!commitsByDate.has(date)) {
+          commitsByDate.set(date, []);
+        }
+        commitsByDate.get(date)!.push(commit);
       }
-      commitsByDate.get(date)!.push(commit);
     }
 
     for (const [date, dayCommits] of commitsByDate) {
@@ -392,7 +403,7 @@ export class TeamMetricsAnalyzer {
           const commit1 = dayCommits[i];
           const commit2 = dayCommits[j];
 
-          if (commit1.author !== commit2.author) {
+          if (commit1 && commit2 && commit1.author !== commit2.author) {
             const commonFiles = commit1.files.filter(f => commit2.files.includes(f));
             if (commonFiles.length > 0) {
               sessions.push({
@@ -431,7 +442,7 @@ export class TeamMetricsAnalyzer {
       const estimatedReviews = Math.min(commit.filesChanged, 5);
       reviewsPerDeveloper[commit.author] += estimatedReviews;
       reviewTime[commit.author] += estimatedReviews * 0.5; // 30 min per review
-      reviewCoverage[commit.author] = Math.min(100, reviewCoverage[commit.author] + 10);
+      reviewCoverage[commit.author] = Math.min(100, (reviewCoverage[commit.author] || 0) + 10);
     }
 
     return {
@@ -456,7 +467,10 @@ export class TeamMetricsAnalyzer {
         pullRequestComments[commit.author] = 0;
       }
 
-      commitMessages[commit.author].push(commit.message);
+      const authorMessages = commitMessages[commit.author];
+      if (authorMessages) {
+        authorMessages.push(commit.message);
+      }
 
       // Estimate communication based on commit message length and content
       const messageLength = commit.message.length;

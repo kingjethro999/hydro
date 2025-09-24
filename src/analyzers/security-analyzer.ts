@@ -75,6 +75,54 @@ export class SecurityAnalyzer {
       pattern: /(?:slack[_-]?webhook|webhook[_-]?url)\s*[:=]\s*['"]https:\/\/hooks\.slack\.com\/services\/[^'"]+['"]/i,
       severity: 'medium',
       description: 'Hardcoded Slack webhook URL detected'
+    },
+    {
+      name: 'Stripe API Key',
+      pattern: /(?:stripe[_-]?api[_-]?key|stripe[_-]?secret[_-]?key)\s*[:=]\s*['"](?:sk_|pk_)[a-zA-Z0-9]{24,}['"]/i,
+      severity: 'critical',
+      description: 'Hardcoded Stripe API key detected'
+    },
+    {
+      name: 'PayPal Client ID',
+      pattern: /(?:paypal[_-]?client[_-]?id|paypal[_-]?client[_-]?secret)\s*[:=]\s*['"][a-zA-Z0-9]{20,}['"]/i,
+      severity: 'high',
+      description: 'Hardcoded PayPal credentials detected'
+    },
+    {
+      name: 'Google API Key',
+      pattern: /(?:google[_-]?api[_-]?key|gcp[_-]?api[_-]?key)\s*[:=]\s*['"][a-zA-Z0-9]{39}['"]/i,
+      severity: 'high',
+      description: 'Hardcoded Google API key detected'
+    },
+    {
+      name: 'Firebase Config',
+      pattern: /(?:firebase[_-]?config|firebase[_-]?api[_-]?key)\s*[:=]\s*['"][a-zA-Z0-9]{20,}['"]/i,
+      severity: 'high',
+      description: 'Hardcoded Firebase configuration detected'
+    },
+    {
+      name: 'Discord Bot Token',
+      pattern: /(?:discord[_-]?bot[_-]?token|discord[_-]?token)\s*[:=]\s*['"][a-zA-Z0-9]{24}\.[a-zA-Z0-9]{6}\.[a-zA-Z0-9_-]{27}['"]/i,
+      severity: 'high',
+      description: 'Hardcoded Discord bot token detected'
+    },
+    {
+      name: 'Telegram Bot Token',
+      pattern: /(?:telegram[_-]?bot[_-]?token|telegram[_-]?token)\s*[:=]\s*['"][0-9]{8,10}:[a-zA-Z0-9_-]{35}['"]/i,
+      severity: 'high',
+      description: 'Hardcoded Telegram bot token detected'
+    },
+    {
+      name: 'SendGrid API Key',
+      pattern: /(?:sendgrid[_-]?api[_-]?key|sendgrid[_-]?key)\s*[:=]\s*['"]SG\.[a-zA-Z0-9_-]{22}\.[a-zA-Z0-9_-]{43}['"]/i,
+      severity: 'high',
+      description: 'Hardcoded SendGrid API key detected'
+    },
+    {
+      name: 'Twilio Credentials',
+      pattern: /(?:twilio[_-]?account[_-]?sid|twilio[_-]?auth[_-]?token)\s*[:=]\s*['"][a-zA-Z0-9]{32,}['"]/i,
+      severity: 'high',
+      description: 'Hardcoded Twilio credentials detected'
     }
   ];
 
@@ -419,6 +467,110 @@ export class SecurityAnalyzer {
       'javascript', 'typescript', 'python', 'java', 'php', 'ruby', 'go', 'rust'
     ];
     return file.language ? securityRelevantLanguages.includes(file.language) : false;
+  }
+
+  /**
+   * Scan for dependency vulnerabilities in package files
+   */
+  public async scanDependencies(files: FileInfo[]): Promise<Issue[]> {
+    const issues: Issue[] = [];
+    const packageFiles = files.filter(f => {
+      const fileName = f.relativePath.split('/').pop() || '';
+      return fileName === 'package.json' || 
+        fileName === 'requirements.txt' || 
+        fileName === 'pom.xml' || 
+        fileName === 'composer.json' ||
+        fileName === 'Gemfile' ||
+        fileName === 'Cargo.toml' ||
+        fileName === 'go.mod';
+    });
+
+    for (const file of packageFiles) {
+      try {
+        const content = await this.fileScanner.readFileContent(file.path);
+        const dependencyIssues = this.analyzeDependencies(file, content);
+        issues.push(...dependencyIssues);
+      } catch (error) {
+        logger.debug(`Failed to analyze dependencies for ${file.path}: ${error}`);
+      }
+    }
+
+    return issues;
+  }
+
+  /**
+   * Analyze dependencies for known vulnerabilities
+   */
+  private analyzeDependencies(file: FileInfo, content: string): Issue[] {
+    const issues: Issue[] = [];
+    
+    // Known vulnerable packages (simplified - in production, use a proper vulnerability database)
+    const vulnerablePackages = {
+      'package.json': [
+        { name: 'lodash', versions: ['<4.17.12'], severity: 'high', description: 'Prototype pollution vulnerability' },
+        { name: 'axios', versions: ['<0.21.1'], severity: 'medium', description: 'Server-Side Request Forgery vulnerability' },
+        { name: 'moment', versions: ['<2.29.2'], severity: 'low', description: 'Regular Expression Denial of Service' }
+      ],
+      'requirements.txt': [
+        { name: 'django', versions: ['<2.2.24'], severity: 'high', description: 'SQL injection vulnerability' },
+        { name: 'flask', versions: ['<1.1.4'], severity: 'medium', description: 'Information disclosure vulnerability' }
+      ]
+    };
+
+    const fileName = file.relativePath.split('/').pop() || '';
+    const fileVulnerabilities = vulnerablePackages[fileName as keyof typeof vulnerablePackages];
+    if (!fileVulnerabilities) return issues;
+
+    for (const vuln of fileVulnerabilities) {
+      const pattern = new RegExp(`"${vuln.name}"\\s*:\\s*"([^"]+)"`, 'i');
+      const match = content.match(pattern);
+      
+      if (match) {
+        const version = match[1];
+        // Simple version comparison (in production, use semver library)
+        if (this.isVulnerableVersion(version!, vuln.versions! as string[])) {
+          issues.push({
+            id: `dependency-vuln-${vuln.name}-${file.relativePath}`,
+            type: 'security-risk',
+            severity: vuln.severity as 'low' | 'medium' | 'high' | 'critical',
+            category: 'security',
+            title: `Vulnerable dependency: ${vuln.name}`,
+            description: vuln.description,
+            file: file.relativePath,
+            line: this.getLineNumber(content, match.index || 0),
+            column: match.index || 0,
+            suggestion: `Update ${vuln.name} to a secure version`,
+            autoFixable: false,
+          });
+        }
+      }
+    }
+
+    return issues;
+  }
+
+  /**
+   * Check if version is vulnerable (simplified implementation)
+   */
+  private isVulnerableVersion(version: string, vulnerableVersions: string[]): boolean {
+    // This is a simplified check - in production, use proper semver comparison
+    for (const vulnVersion of vulnerableVersions) {
+      if (vulnVersion.startsWith('<')) {
+        const targetVersion = vulnVersion.substring(1);
+        // Simple string comparison for demo purposes
+        if (version < targetVersion) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Get line number from character index
+   */
+  private getLineNumber(content: string, index: number): number {
+    return content.substring(0, index).split('\n').length;
   }
 }
 

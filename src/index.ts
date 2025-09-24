@@ -68,21 +68,24 @@ export class Hydro {
   }
 
   /**
-   * Analyze project programmatically
+   * Analyze project programmatically with optimized bulk processing
    */
   public async analyze(options: {
     path?: string;
     comprehensive?: boolean;
     threshold?: number;
+    progressCallback?: (info: any) => void;
   } = {}): Promise<AnalysisResult> {
     const config = this.configManager.getConfig();
     const scanner = new FileScanner();
     
+    // Enhanced file scanning with progress tracking
     const scanResult = await scanner.scanFiles(
       options.path || process.cwd(),
       config.scan
     );
 
+    // Analyze with progress tracking
     return this.analysisEngine.analyzeProject(
       options.path || process.cwd(),
       scanResult.files,
@@ -91,6 +94,7 @@ export class Hydro {
         comprehensive: options.comprehensive || false,
         threshold: options.threshold || 1,
         includeMetrics: true,
+        ...(options.progressCallback && { progressCallback: options.progressCallback }),
       }
     );
   }

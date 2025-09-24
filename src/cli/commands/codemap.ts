@@ -249,9 +249,12 @@ export class CodeMapCommand extends BaseCommand {
       if (!acc[filePath]) {
         acc[filePath] = { issues: 0, maxSeverity: 'low' };
       }
-      acc[filePath].issues++;
-      if (this.severityLevel(severity) > this.severityLevel(acc[filePath].maxSeverity)) {
-        acc[filePath].maxSeverity = severity;
+      const fileData = acc[filePath];
+      if (fileData) {
+        fileData.issues++;
+        if (this.severityLevel(severity) > this.severityLevel(fileData.maxSeverity)) {
+          fileData.maxSeverity = severity;
+        }
       }
       return acc;
     }, {} as Record<string, { issues: number; maxSeverity: string }>);

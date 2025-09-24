@@ -256,3 +256,73 @@ export interface GenerationOptions {
 
 // Plugin System Types
 export type PluginType = 'analyzer' | 'command' | 'visualizer' | 'generator';
+
+// Team Metrics Types
+export interface TeamMetrics {
+  productivity: ProductivityMetrics;
+  knowledge: KnowledgeDistribution;
+  collaboration: CollaborationMetrics;
+  codeOwnership: CodeOwnershipMetrics;
+}
+
+export interface ProductivityMetrics {
+  commitsPerDeveloper: Record<string, number>;
+  linesAddedPerDeveloper: Record<string, number>;
+  linesRemovedPerDeveloper: Record<string, number>;
+  filesChangedPerDeveloper: Record<string, number>;
+  averageCommitSize: Record<string, number>;
+  activeDays: Record<string, number>;
+}
+
+export interface KnowledgeDistribution {
+  fileOwnership: Record<string, string[]>;
+  expertiseAreas: Record<string, string[]>;
+  knowledgeGaps: string[];
+  crossTraining: CrossTrainingSuggestion[];
+}
+
+export interface CollaborationMetrics {
+  pairProgramming: PairProgrammingSession[];
+  codeReviews: CodeReviewMetrics;
+  communication: CommunicationMetrics;
+}
+
+export interface CodeOwnershipMetrics {
+  busFactor: Record<string, number>;
+  ownershipDistribution: Record<string, OwnershipInfo>;
+  maintenanceBurden: Record<string, number>;
+}
+
+export interface CrossTrainingSuggestion {
+  file: string;
+  currentOwner: string;
+  suggestedTrainee: string;
+  reason: string;
+  priority: 'low' | 'medium' | 'high';
+}
+
+export interface PairProgrammingSession {
+  developers: string[];
+  files: string[];
+  duration: number;
+  date: Date;
+}
+
+export interface CodeReviewMetrics {
+  reviewCount: Record<string, number>;
+  reviewTime: Record<string, number>;
+  feedbackQuality: Record<string, number>;
+}
+
+export interface CommunicationMetrics {
+  commitMessageQuality: Record<string, number>;
+  issueParticipation: Record<string, number>;
+  documentationContribution: Record<string, number>;
+}
+
+export interface OwnershipInfo {
+  primaryOwner: string;
+  contributors: string[];
+  lastModified: Date;
+  modificationCount: number;
+}
