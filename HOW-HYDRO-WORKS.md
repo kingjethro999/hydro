@@ -227,7 +227,7 @@ advanced:
           strictMode: true
 ```
 
-### 4. **Comprehensive Monitoring**
+### 4. **Comprehensive Monitoring**.
 
 Set up notifications and integrations for continuous quality monitoring:
 ```yaml
