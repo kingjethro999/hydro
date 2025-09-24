@@ -124,3 +124,10 @@ hydro-report.json
 # Test artifacts
 test-results/
 playwright-report/
+
+# API Key Security - Prevent accidental commits of API keys
+scripts/encrypt-api-key.js
+scripts/test-encryption.js
+scripts/test-ai-simple.js
+**/*api-key*.js
+**/*apikey*.js

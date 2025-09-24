@@ -64,7 +64,7 @@ function decrypt(encryptedData) {
 }
 
 // Test the encryption/decryption
-const testKey = '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';
+const testKey = 'your-test-api-key-here'; // Replace with actual key for testing
 const encryptedKey = 'NzEzZjA4ODI4NmIzMWJiMjE0YmE0ZDcyYWJjNmYxMTQ6YmMyNGI5ZTRlYzhmZjA2MWEwNjVhNGUwZDNlZGExNzkyYjBiY2I1YTFhMmUwODJkMmI0N2M4MjJkNTMyOWJkOWM1YjgzMWQ4YWU3NzcxMDU2OTU4NGViM2ViZjQzYWJhNGJiMDRiNmFjZGVlZWEwMTU1ZmI1MTJiY2VhZDkxNzkxYWZjMWQ5YWUwM2E1NDkzN2Q4MGVlNDZmYzI4MDA0MQ==';
 
 console.log('Testing encryption/decryption...');

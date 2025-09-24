@@ -33,8 +33,8 @@ function encrypt(text) {
   }
 }
 
-// The API key to encrypt
-const API_KEY = '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';
+// The API key to encrypt - REPLACE WITH YOUR ACTUAL API KEY
+const API_KEY = 'your-actual-openrouter-api-key-here';
 
 console.log('Encrypting API key...');
 const encryptedKey = encrypt(API_KEY);
