@@ -87,12 +87,12 @@ hydro bulk --ai-analyze --max-concurrency 5 --ai-batch-size 10
 
 ### API Configuration
 
-The AI service uses OpenRouter API with the following configuration:
+The AI service uses AI API with the following configuration:
 
 ```typescript
 // src/config/ai-config.ts
 export const AI_CONFIG = {
-  OPENROUTER_API_KEY: 'encrypted-key', // Pre-configured
+  AI_API_KEY: 'encrypted-key', // Pre-configured
   DEFAULT_MODEL: 'deepseek/deepseek-chat-v3.1:free',
   MAX_TOKENS: 4000,
   TEMPERATURE: 0.7
