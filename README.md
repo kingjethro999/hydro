@@ -522,7 +522,7 @@ hydro scan --config hydro.dev.yml --format json > dev-report.json
 ### Core Components
 
 - **Analysis Engine**: Orchestrates multiple analyzers for comprehensive code analysis
-- **AI Service**: Integrates with OpenRouter API for intelligent code analysis and generation
+- **AI Service**: Integrates with AI API for intelligent code analysis and generation
 - **File Scanner**: Efficiently scans and processes large codebases
 - **Bulk Operations**: Optimized processing for large-scale operations
 - **Configuration Manager**: Handles flexible YAML-based configuration
@@ -540,7 +540,7 @@ hydro scan --config hydro.dev.yml --format json > dev-report.json
 
 ### AI Integration
 
-<!-- - **OpenRouter API**: Uses advanced language models for code analysis -->
+<!-- - **AI API**: Uses advanced language models for code analysis -->
 - **Fallback System**: Graceful degradation when AI is unavailable
 - **Batch Processing**: Optimized AI operations for large codebases
 - **Context Awareness**: Maintains code context for better AI responses
@@ -596,7 +596,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Inspired by tools like ESLint, SonarQube, and CodeClimate
 - Built with TypeScript, Commander.js, and other amazing open-source libraries
 - Thanks to all contributors and the open-source community
-- AI capabilities powered by OpenRouter and advanced language models
+- AI capabilities powered by advanced language models
 
 ## 📞 Support
 

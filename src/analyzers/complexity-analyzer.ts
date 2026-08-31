@@ -226,6 +226,12 @@ export class ComplexityAnalyzer {
           // Find function end
           const functionEnd = this.findFunctionEnd(lines, i, language);
           const lineCount = functionEnd - i + 1;
+          
+          // Skip if function is too large (likely a parsing error)
+          if (lineCount > 200) {
+            continue;
+          }
+          
           const body = lines.slice(i, functionEnd + 1).join('\n');
 
           functions.push({
@@ -286,6 +292,7 @@ export class ComplexityAnalyzer {
   private findFunctionEnd(lines: string[], startIndex: number, language: string): number {
     let braceCount = 0;
     let inFunction = false;
+    let foundOpeningBrace = false;
 
     for (let i = startIndex; i < lines.length; i++) {
       const line = lines[i];
@@ -297,9 +304,10 @@ export class ComplexityAnalyzer {
           if (char === '{') {
             braceCount++;
             inFunction = true;
+            foundOpeningBrace = true;
           } else if (char === '}') {
             braceCount--;
-            if (inFunction && braceCount === 0) {
+            if (inFunction && foundOpeningBrace && braceCount === 0) {
               return i;
             }
           }
@@ -315,7 +323,10 @@ export class ComplexityAnalyzer {
       }
     }
 
-    return lines.length - 1;
+    // If we couldn't find the end, return a reasonable maximum (100 lines)
+    // This prevents treating entire files as single functions
+    const maxFunctionLength = 100;
+    return Math.min(startIndex + maxFunctionLength, lines.length - 1);
   }
 
   /**
@@ -325,7 +336,7 @@ export class ComplexityAnalyzer {
     // Count decision points
     const decisionKeywords = [
       'if', 'else', 'elif', 'while', 'for', 'switch', 'case',
-      'catch', 'try', '&&', '||', '?', '??', 'and', 'or'
+      'catch', 'try', '&&', '||', 'and', 'or'
     ];
 
     let complexity = 1; // Base complexity
@@ -333,6 +344,19 @@ export class ComplexityAnalyzer {
     for (const keyword of decisionKeywords) {
       const regex = new RegExp(`\\b${keyword}\\b`, 'g');
       const matches = code.match(regex);
+      if (matches) {
+        complexity += matches.length;
+      }
+    }
+
+    // Handle special cases for operators that can't use word boundaries
+    const specialPatterns = [
+      /\?/g,  // ternary operator
+      /\?\?/g, // nullish coalescing
+    ];
+
+    for (const pattern of specialPatterns) {
+      const matches = code.match(pattern);
       if (matches) {
         complexity += matches.length;
       }
