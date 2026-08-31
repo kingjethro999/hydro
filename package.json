@@ -7,8 +7,8 @@
     "hydro": "dist/cli/index.js"
   },
   "scripts": {
-    "build": "tsc && tsc-alias",
-    "dev": "tsx src/cli/index.ts",
+    "build": "node api.js && tsc && tsc-alias",
+    "dev": "node api.js && tsx src/cli/index.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
