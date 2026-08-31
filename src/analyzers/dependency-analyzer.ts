@@ -399,7 +399,22 @@ export class DependencyAnalyzer {
     const analyzableLanguages = [
       'javascript', 'typescript', 'python', 'java', 'go', 'rust'
     ];
-    return file.language ? analyzableLanguages.includes(file.language) : false;
+    
+    // Exclude node_modules, dist, build, and other generated directories
+    const excludedPaths = [
+      'node_modules',
+      'dist',
+      'build',
+      '.git',
+      'coverage',
+      '.nyc_output'
+    ];
+    
+    const isExcluded = excludedPaths.some(path => 
+      file.path.includes(`/${path}/`) || file.path.includes(`\\${path}\\`)
+    );
+    
+    return !isExcluded && (file.language ? analyzableLanguages.includes(file.language) : false);
   }
 
   /**
